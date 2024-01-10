@@ -71,17 +71,12 @@ string ::= '"' [a-z A-Z 1-9 \s]+ '"'
 | mul | CONSTANT, DIRECT_ADDRESS | AC * operand |
 | div | CONSTANT, DIRECT_ADDRESS | AC / operand |
 | mod | CONSTANT, DIRECT_ADDRESS | AC % operand |
-| cmp | CONSTANT, DIRECT_ADDRESS |  |
-| jmp | CONSTANT |  |
-| je | CONSTANT |  |
-| call | CONSTANT |  |
-| ret | - |  |
-| ld | CONSTANT, DIRECT_ADDRESS |  |
-| st | CONSTANT |  |
-| hlt | - |  |
-| push | - |  |
-| pop | - |  |
-
+| cmp | CONSTANT, DIRECT_ADDRESS | AC - M -> ZF |
+| jmp | CONSTANT | M -> IP |
+| je | CONSTANT | if ZF: M -> IP |
+| ld | CONSTANT, DIRECT_ADDRESS | M -> AC |
+| st | CONSTANT | AC -> M |
+| hlt | - | останов |
 
 ### Кодирование инструкций
 
@@ -111,7 +106,7 @@ string ::= '"' [a-z A-Z 1-9 \s]+ '"'
 
 где:
 
-opcode -- строка с кодом операции;
-arg -- аргумент (может отсутствовать);
+opcode -- строка с кодом операции; \
+arg -- аргумент (может отсутствовать); \
 mode -- режим адресации (может отсутствовать)
 
