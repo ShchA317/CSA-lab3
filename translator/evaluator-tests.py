@@ -1,10 +1,10 @@
 from evaluator import evaluate
-from reader import lispMyASTBuilder
+from reader import lisp_my_ast_builder
 from isa import Opcode
-from evaluator import createInstr
+from evaluator import create_instr
 import json
 
-sExpressions, symbols, _ = lispMyASTBuilder("(+ 1 2 3)")
+sExpressions, symbols, _ = lisp_my_ast_builder("(+ 1 (- 3 2))")
 
 code = []
 for form in sExpressions:
@@ -13,5 +13,5 @@ for form in sExpressions:
     machineCodes, _, symbols = evaluate(form, machineCodes, 0, symbols)
     code += machineCodes
 
-code.append(createInstr(Opcode.HLT, '', 0))
-print(json.dumps(code, indent=4))
+code.append(create_instr(Opcode.HLT, '', 0))
+print(json.dumps(code, indent=2))

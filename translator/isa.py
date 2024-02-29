@@ -18,7 +18,7 @@ class Opcode(str, Enum):
     JLE = 'jle'
     HLT = 'hlt'
     MEM = 'mem'
-    PRINT = 'print' # TODO: убрать эту инструкцию
+    PRINT = 'print'  # TODO: убрать эту инструкцию
 
 
 def write_code(filename, code):

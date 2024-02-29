@@ -1,5 +1,4 @@
 import re
-import isa
 from ast_classes import *
 
 funcs = {
@@ -20,6 +19,7 @@ funcs = {
     'if': ListType.SPEC,
 }
 
+
 # удаляет комментарии и ужимает код в одну стрку
 def minimize(code):
     pattern = r';.*$'
@@ -28,104 +28,104 @@ def minimize(code):
     compressed_code = ' '.join(compressed_code.split())
     return compressed_code
 
-def isSelfEvaluated(pred: str) -> bool:
+
+def is_self_evaluated(pred: str) -> bool:
     return pred[0] == '"' or str.isnumeric(pred) or pred == 'NIL' or pred == 'T'
 
 
 def is_correct_brackets(text):
-  breacket_count = 0
-  for char in text:
-    if char == ")":
-      breacket_count -= 1
-    if char == "(":
-      breacket_count += 1
-    if breacket_count < 0:
-      return False
-  if breacket_count != 0:
-    return False
-  return True
+    bracket_count = 0
+    for char in text:
+        if char == ")":
+            bracket_count -= 1
+        if char == "(":
+            bracket_count += 1
+        if bracket_count < 0:
+            return False
+    if bracket_count != 0:
+        return False
+    return True
 
 
-def readExpressions(text, pos, prevCh):
-    sExpressions = []
-    sExpr = ''
-    isInString = False
+def read_expressions(text, pos, prev_ch):
+    s_expressions = []
+    s_expr = ''
+    is_in_string = False
     while pos < len(text):
         ch = text[pos]
         if ch == '"':
-            if isInString:
-                isInString = False
-                sExpr += ch
-                sExpressions.append(sExpr)
-                sExpr = ''
+            if is_in_string:
+                is_in_string = False
+                s_expr += ch
+                s_expressions.append(s_expr)
+                s_expr = ''
             else:
-                isInString = True
-                sExpr += ch
-        elif (ch in (' ', '\n')) and not isInString:
-            if sExpr == '' and (prevCh in (' ', '\n')):
-                sExpr = 'NIL'
-            if sExpr not in ('', '\n'):
-                sExpressions.append(sExpr)
-            sExpr = ''
+                is_in_string = True
+                s_expr += ch
+        elif (ch in (' ', '\n')) and not is_in_string:
+            if s_expr == '' and (prev_ch in (' ', '\n')):
+                s_expr = 'NIL'
+            if s_expr not in ('', '\n'):
+                s_expressions.append(s_expr)
+            s_expr = ''
         elif ch == '(':
-            sExpr, pos = readExpressions(text, pos + 1, ch)
-            prevCh = text[pos]
-            sExpressions.append(sExpr)
-            sExpr = ''
+            s_expr, pos = read_expressions(text, pos + 1, ch)
+            prev_ch = text[pos]
+            s_expressions.append(s_expr)
+            s_expr = ''
             pos += 1
             continue
         elif ch == ')':
-            if sExpr == '' and (prevCh in (' ', '\n')):
-                sExpr = 'NIL'
-            if sExpr not in ('', '\n'):
-                sExpressions.append(sExpr)
-            return sExpressions, pos
+            if s_expr == '' and (prev_ch in (' ', '\n')):
+                s_expr = 'NIL'
+            if s_expr not in ('', '\n'):
+                s_expressions.append(s_expr)
+            return s_expressions, pos
         else:
-            sExpr += ch
+            s_expr += ch
         pos += 1
-        prevCh = ch
+        prev_ch = ch
 
-    return sExpressions, pos, text[pos - 1]
+    return s_expressions, pos, text[pos - 1]
 
 
-def makeLispForm(expr, symbols: dict, symbAddr: int):
+def make_lisp_form(expr, symbols: dict, symb_addr: int):
     if isinstance(expr, (LispAtom, LispList)):
-        return expr, symbols, symbAddr
+        return expr, symbols, symb_addr
     if not isinstance(expr, list):
         s = str(expr)
-        form = []
         if s.isnumeric():
-          form = LispAtom(int(expr), AtomType.NUM)
+            form = LispAtom(int(expr), AtomType.NUM)
         elif s.startswith('"'):
-          form = LispAtom(expr[1:-1], AtomType.STRING)
+            form = LispAtom(expr[1:-1], AtomType.STRING)
         elif s in {'NIL', 'T'}:
-          form = LispAtom(expr, AtomType.CONST)
+            form = LispAtom(expr, AtomType.CONST)
         elif s in symbols:
-          form = LispAtom(expr, AtomType.CHAR)
+            form = LispAtom(expr, AtomType.CHAR)
         else:
-          symbols[s] = (AtomType.UNDEF, LispAtom('n', AtomType.UNDEF), symbAddr)
-          symbAddr += 1
-          form = LispAtom(expr, AtomType.CHAR)
+            symbols[s] = (AtomType.UNDEF, LispAtom('n', AtomType.UNDEF), symb_addr)
+            symb_addr += 1
+            form = LispAtom(expr, AtomType.CHAR)
 
-        return form, symbols, symbAddr
+        return form, symbols, symb_addr
 
     pred = expr[0]
-    assert isSelfEvaluated(pred) == False
+    assert is_self_evaluated(pred) == False
     assert (pred not in symbols and pred not in funcs) == False
 
     args = []
     for arg in expr[1:]:
-      m = makeLispForm(arg, symbols, symbAddr)
-      args.append(m[0])
-      symbols = m[1]
-      symbAddr = m[2]
+        m = make_lisp_form(arg, symbols, symb_addr)
+        args.append(m[0])
+        symbols = m[1]
+        symb_addr = m[2]
 
     form = LispList(pred, funcs.get(pred), args)
 
-    return form, symbols, symbAddr
+    return form, symbols, symb_addr
 
 
-def showSymbols(symbols):
+def show_symbols(symbols):
     print("{")
     for k in symbols:
         print(f'{k}: <{symbols.get(k)[0]}> {symbols.get(k)[1].content}')
@@ -133,19 +133,17 @@ def showSymbols(symbols):
     print()
 
 
-
-# [reader]
-def lispMyASTBuilder(text):
+def lisp_my_ast_builder(text):
     symbols = {}
-    symbAddr = 100
+    symb_addr = 100
     forms = []
 
     text = minimize(text)
     if is_correct_brackets(text):
-        sExpressions = readExpressions(text, 0, 'a')
-        for expr in sExpressions[0]:
-            form, symbols, symbAddr = makeLispForm(expr, symbols, symbAddr)
+        s_expressions = read_expressions(text, 0, 'a')
+        for expr in s_expressions[0]:
+            form, symbols, symb_addr = make_lisp_form(expr, symbols, symb_addr)
             forms.append(form)
     else:
         print('')
-    return forms, symbols, symbAddr
+    return forms, symbols, symb_addr

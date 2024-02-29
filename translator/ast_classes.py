@@ -1,6 +1,7 @@
 import dataclasses
 from enum import Enum
 
+
 class AtomType(str, Enum):
     CHAR = 'char'
     NUM = 'number'
