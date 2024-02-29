@@ -1,6 +1,7 @@
 import sys
-# import ast_classes
-# from isa import Opcode 
+from ast_classes import *
+from isa import Opcode 
+from reader import funcs
 
 print(sys.version_info)
 
@@ -105,7 +106,7 @@ def lispSetq(form, symbols):
 
 
 def arithCheck(form: LispList, symbols) -> bool:
-    assert len(form.args) == 2
+    # assert len(form.args) == 2
     for a in form.args:
         assert a.type != AtomType.CHAR or symbols[a.content][0] != AtomType.UNDEF
         assert isinstance(a, LispAtom)
