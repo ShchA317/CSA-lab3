@@ -7,6 +7,8 @@ print(sys.version_info)
 
 buffer = 0
 prevId = 0
+read_pointer = 101
+write_pointer = 102
 strPointer = 999
 
 
@@ -163,7 +165,7 @@ def lispPrint(form: LispList, symbols):
     if form.args[0].type == AtomType.CHAR and symbols[form.args[0].content][0] == AtomType.STRING:
         mem_addr = symbols[form.args[0].content][2]
         machine_codes.append(create_instr(Opcode.LOAD, mem_addr, 2))
-        machine_codes.append(create_instr(Opcode.PRINT, '', 0))   # TODO: use store instead print
+        machine_codes.append(create_instr(Opcode.STORE, write_pointer, 1))
 
         machine_codes.append(create_instr(Opcode.LOAD, mem_addr, 1))
         machine_codes.append(create_instr(Opcode.ADD, 1, 0))
@@ -175,7 +177,7 @@ def lispPrint(form: LispList, symbols):
         machine_codes.append(create_instr(Opcode.JMP, -8, 3))
     else:
         machine_codes += load_value(form.args[0], symbols)
-        machine_codes.append(create_instr(Opcode.PRINT, '', 0))   # TODO: use store instead print
+        machine_codes.append(create_instr(Opcode.STORE, write_pointer, 1))
     return machine_codes
 
 
@@ -188,7 +190,7 @@ def lisp_scan(form: LispList, symbols):
 
     machine_op = []
     mem_addr = symbols[form.args[0].content][2]
-    machine_op.append(create_instr(Opcode.READ, mem_addr, 1))   # TODO: reading from input mem_addr
+    machine_op.append(create_instr(Opcode.LOAD, read_pointer, 1))
     return machine_op
 
 

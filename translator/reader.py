@@ -2,6 +2,7 @@ import re
 from ast_classes import *
 
 funcs = {
+    'scan': ListType.FUNC,
     'print': ListType.FUNC,
     '+': ListType.FUNC,
     '-': ListType.FUNC,
@@ -20,7 +21,6 @@ funcs = {
 }
 
 
-# удаляет комментарии и ужимает код в одну стрку
 def minimize(code):
     pattern = r';.*$'
     code = re.sub(pattern, '', code, flags=re.MULTILINE)
@@ -125,25 +125,15 @@ def make_lisp_form(expr, symbols: dict, symb_addr: int):
     return form, symbols, symb_addr
 
 
-def show_symbols(symbols):
-    print("{")
-    for k in symbols:
-        print(f'{k}: <{symbols.get(k)[0]}> {symbols.get(k)[1].content}')
-    print("}")
-    print()
-
-
 def lisp_my_ast_builder(text):
     symbols = {}
-    symb_addr = 100
+    symb_addr = 103
     forms = []
 
     text = minimize(text)
     if is_correct_brackets(text):
-        s_expressions = read_expressions(text, 0, 'a')
+        s_expressions = read_expressions(text, 0, '')
         for expr in s_expressions[0]:
             form, symbols, symb_addr = make_lisp_form(expr, symbols, symb_addr)
             forms.append(form)
-    else:
-        print('')
     return forms, symbols, symb_addr

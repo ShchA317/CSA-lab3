@@ -9,7 +9,6 @@ class Opcode(str, Enum):
     SUB = 'sub'
     MOD = 'mod'
     REM = 'rem'
-    READ = 'read'
     JMP = 'jmp'
     CMP = 'cmp'
     JE = 'je'
@@ -18,7 +17,6 @@ class Opcode(str, Enum):
     JLE = 'jle'
     HLT = 'hlt'
     MEM = 'mem'
-    PRINT = 'print'  # TODO: убрать эту инструкцию
 
 
 def write_code(filename, code):
