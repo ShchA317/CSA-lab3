@@ -55,12 +55,12 @@ def read_expressions(text, pos, prev_ch):
         ch = text[pos]
         if ch == '"':
             if is_in_string:
-                is_in_string = False
+                is_in_string = not is_in_string
                 s_expr += ch
                 s_expressions.append(s_expr)
                 s_expr = ''
             else:
-                is_in_string = True
+                is_in_string = not is_in_string
                 s_expr += ch
         elif (ch in (' ', '\n')) and not is_in_string:
             if s_expr == '' and (prev_ch in (' ', '\n')):
@@ -110,18 +110,17 @@ def make_lisp_form(expr, symbols: dict, symb_addr: int):
         return form, symbols, symb_addr
 
     pred = expr[0]
-    assert is_self_evaluated(pred) == False
-    assert (pred not in symbols and pred not in funcs) == False
+    assert not is_self_evaluated(pred)
+    assert not (pred not in symbols and pred not in funcs)
 
     args = []
     for arg in expr[1:]:
-        m = make_lisp_form(arg, symbols, symb_addr)
-        args.append(m[0])
-        symbols = m[1]
-        symb_addr = m[2]
+        lisp_form = make_lisp_form(arg, symbols, symb_addr)
+        args.append(lisp_form[0])
+        symbols = lisp_form[1]
+        symb_addr = lisp_form[2]
 
     form = LispList(pred, funcs.get(pred), args)
-
     return form, symbols, symb_addr
 
 
