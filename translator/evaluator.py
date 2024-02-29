@@ -16,7 +16,8 @@ def create_instr(op: Opcode, arg, ismem):
     return {
         "opcode": op,
         "arg": arg,
-        "mem": ismem
+        "mem": ismem,
+        "num": None
     }
 
 

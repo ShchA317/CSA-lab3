@@ -14,4 +14,10 @@ for form in sExpressions:
     code += machineCodes
 
 code.append(create_instr(Opcode.HLT, '', 0))
+
+count = 0
+for c in code:
+    c["num"] = count
+    count += 1
+
 print(json.dumps(code, indent=2))
